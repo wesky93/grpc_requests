@@ -1,5 +1,4 @@
 import logging
-import sys
 from enum import Enum
 from functools import partial
 from typing import (
@@ -14,7 +13,6 @@ from typing import (
 )
 
 import grpc
-import warnings
 from google.protobuf import descriptor_pb2, message_factory
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf.descriptor import MethodDescriptor, ServiceDescriptor
@@ -24,26 +22,15 @@ from grpc_reflection.v1alpha import reflection_pb2, reflection_pb2_grpc
 
 from .utils import describe_descriptor, load_data
 
-if sys.version_info >= (3, 8):
-    import importlib.metadata
-    from typing import (
-        Protocol,
-        TypedDict,  # pylint: disable=no-name-in-module
-    )
+import importlib.metadata
+from typing import (
+    Protocol,
+    TypedDict,  # pylint: disable=no-name-in-module
+)
 
-    def get_metadata(package_name: str):
-        return importlib.metadata.version(package_name)
-else:
-    import pkg_resources
-    from typing_extensions import Protocol, TypedDict
 
-    warnings.warn(
-        "Support for Python 3.7 is deprecated and will be removed in version 0.1.19",
-        stacklevel=1,
-    )
-
-    def get_metadata(package_name: str):
-        return pkg_resources.get_distribution(package_name).version
+def get_metadata(package_name: str):
+    return importlib.metadata.version(package_name)
 
 
 # Import GetMessageClass if protobuf version supports it

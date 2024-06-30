@@ -1,5 +1,4 @@
 import logging
-import sys
 from contextlib import suppress
 from enum import Enum
 from functools import partial
@@ -15,8 +14,10 @@ from typing import (
     Union,
 )
 
+import importlib.metadata
+from typing import Protocol
+
 import grpc
-import warnings
 from google.protobuf import (
     descriptor_pb2,
     message_factory,
@@ -39,23 +40,9 @@ from .utils import load_data
 
 logger = logging.getLogger(__name__)
 
-if sys.version_info >= (3, 8):
-    import importlib.metadata
-    from typing import Protocol
 
-    def get_metadata(package_name: str):
-        return importlib.metadata.version(package_name)
-else:
-    import pkg_resources
-    from typing_extensions import Protocol
-
-    warnings.warn(
-        "Support for Python 3.7 is deprecated and will be removed in version 0.1.19",
-        stacklevel=1,
-    )
-
-    def get_metadata(package_name: str):
-        return pkg_resources.get_distribution(package_name).version
+def get_metadata(package_name: str):
+    return importlib.metadata.version(package_name)
 
 
 # Import GetMessageClass if protobuf version supports it
@@ -687,7 +674,7 @@ AsyncClient = ReflectionAsyncClient
 
 _cached_clients: Dict[
     str, Union[BaseAsyncClient, StubAsyncClient, ReflectionAsyncClient]
-] = {}  # Dict[str, AsyncClient] type (for 3.6,3.7 compatibility https://bugs.python.org/issue34939)
+] = {}
 
 
 def get_by_endpoint(endpoint, service_descriptors=None, **kwargs) -> AsyncClient:
